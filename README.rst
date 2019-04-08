@@ -10,7 +10,7 @@ for dist-git.
 
 Comparing ``rdopkg patch`` with this ``tar-changes`` script:
 
-+-----------------------------------------------------------------------+
++------------------------------------+----------------------------------+
 | "rdopkg patch"                     | this "tar-changes" script        |
 +====================================+==================================+
 | Transforms a downstream -patches branch into output suitable for      |
