@@ -23,6 +23,10 @@ Comparing ``rdopkg patch`` with this ``tar-changes`` script:
 | Generates .patch files             | Generates a tarball of changed   |
 |                                    | files                            |
 +------------------------------------+----------------------------------+
+| Limited_ by RHEL 7's static        | rpmbuild's ``%prep`` script does |
+| buffer limit for ``%prep`` in      | not grow with the number of      |
+| rpmbuild.                          | patches.                         |
++------------------------------------+----------------------------------+
 | Ability to delete files entirely   | Unable to delete files (only add |
 | from the tree downstream.          | or edit existing files).         |
 +------------------------------------+----------------------------------+
@@ -45,3 +49,5 @@ Comparing ``rdopkg patch`` with this ``tar-changes`` script:
 |                                    | change with                      |
 |                                    | ``rdopkg tag-patches``.          |
 +------------------------------------+----------------------------------+
+
+.. _Limited: https://github.com/softwarefactory-project/rdopkg/issues/169
