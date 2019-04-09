@@ -134,7 +134,7 @@ changes = check_new_commits(base_tag, orig_commit, patches_sha)
 
 if not changes:
     log.info('no changes. exiting')
-    raise SystemExit()
+    raise SystemExit(1)
 
 # Bump the release and add the %changelog entries.
 
