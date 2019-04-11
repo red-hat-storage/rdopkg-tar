@@ -98,6 +98,16 @@ def format_changelog(changes_data):
     return changes
 
 
+def clear_old_changes_sources():
+    """ Delete the "-changes.tar.gz" lines from the "sources" file. """
+    with open('sources', 'r') as f:
+        lines = f.readlines()
+    with open('sources', 'w') as f:
+        for line in lines:
+            if '-changes.tar.gz' not in line:
+                f.write(line)
+
+
 def main():
     spec = specfile.Spec()
 
@@ -148,15 +158,8 @@ def main():
         fedpkg = 'fedpkg'
         if osdist.startswith('RH'):
             fedpkg = 'rhpkg'
-        # rdopkg.actions.distgit.actions.new_sources() fails on py3,
-        # https://github.com/softwarefactory-project/rdopkg/issues/170
-        # and there's also the second problem that get_source_urls() only ever
-        # returns Source0. So we'll do this with our spec.rpmspec.
-        sources = [s[0] for s in spec.rpmspec.sources if s[2] == 1]
-        sources = map(os.path.basename, sources)
-        # deal with ceph's submodule-patches-as-sources hack:
-        sources = [s for s in sources if not s.endswith('.patch')]
-        run(fedpkg, 'new-sources', *sources, direct=True)
+        clear_old_changes_sources()
+        run(fedpkg, 'upload', tarball, direct=True)
 
     # Commit everything to dist-git
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
