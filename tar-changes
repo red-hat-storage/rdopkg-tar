@@ -164,6 +164,8 @@ def main():
     # Commit everything to dist-git
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
                                                          local_patches_branch=patches_branch)
+    # Show the final commit
+    rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)
 
 
 if __name__ == '__main__':
