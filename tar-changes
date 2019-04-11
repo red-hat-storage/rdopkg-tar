@@ -68,7 +68,8 @@ def check_new_commits(tag, old, new):
     if old == new:
         return []
     hashes = git.get_commit_hashes(tag, new)
-    if old[:10] in hashes:
+    hashlen = len(hashes[0])
+    if old[:hashlen] in hashes:
         # This is a linear change. We can simply return the Git commit
         # subjects between "old" and "new".
         changes_data = git.get_commit_bzs(old, new)
