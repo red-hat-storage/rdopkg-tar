@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import os
 from rdopkg.utils import log
 from rdopkg.utils import specfile
 from rdopkg.utils.cmd import run
