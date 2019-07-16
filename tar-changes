@@ -51,7 +51,7 @@ def set_source1(spec):
     if source1 != source_value:
         # Log the existing Source1, then clobber it.
         msg = 'overwriting Source1: %s with new -changes.tar.gz' % source1
-        log.warning(msg)
+        log.warn(msg)
         spec.set_tag('Source1', source_value)
 
 
