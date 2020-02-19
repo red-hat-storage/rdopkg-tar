@@ -76,7 +76,7 @@ def check_new_commits(tag, old, new):
         return format_changelog(changes_data)
     else:
         # This is not a linear change (a developer rewrote history).
-        return ['Updated patches']
+        return ['Update patches']
         # TODO: find common ancestor, and figure out what diverged.
         # Need to think more about this.
         # https://github.com/softwarefactory-project/rdopkg/issues/160
