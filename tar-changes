@@ -118,7 +118,9 @@ def main():
     branch = git.current_branch()  # "ceph-3.2-rhel-7"
     tag_style = guess.version_tag_style(version=version)  # "vX.Y.Z"
     base_tag = guess.version2tag(version, tag_style)  # "v12.2.8"
-    osdist = guess.osdist()
+    #osdist = guess.osdist()
+    # private branch names mess up guess.osdist(). Force it to be 'RHCEPH'.
+    osdist = 'RHCEPH'
 
     # "ceph-3.2-rhel-patches"
     remote_patches_branch = guess.patches_branch(branch, pkg=name,
@@ -154,12 +156,15 @@ def main():
     rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
 
     # add + upload this new tarball.
-    if guess.new_sources():
-        fedpkg = 'fedpkg'
-        if osdist.startswith('RH'):
-            fedpkg = 'rhpkg'
-        clear_old_changes_sources()
-        run(fedpkg, 'upload', tarball, direct=True)
+    ## Comment out the two lines below, otherwise guess.new_sources() calls is_fedora_distgit()
+    ##  and prevents proper handling of the "sources" file and prevents `rhpkg upload` due
+    ##  to private git branch names.
+    #if guess.new_sources():
+    #    fedpkg = 'fedpkg'
+    if osdist.startswith('R'):
+        fedpkg = 'rhpkg'
+    clear_old_changes_sources()
+    run(fedpkg, 'upload', tarball, direct=True)
 
     # Commit everything to dist-git
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
