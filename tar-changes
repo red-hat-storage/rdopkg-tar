@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import re
 from rdopkg.utils import log
 from rdopkg.utils import specfile
 from rdopkg.utils.cmd import run
@@ -108,6 +109,17 @@ def clear_old_changes_sources():
                 f.write(line)
 
 
+def guess_osdist():
+    """
+    workaround buggy guess.osdist() in rdopkg 1.2.0
+
+    https://softwarefactory-project.io/r/18391
+    """
+    branch = guess.current_branch()
+    branch = re.sub(r'^private-[^-]+-', '', branch)
+    return guess.osdist(branch)
+
+
 def main():
     spec = specfile.Spec()
 
@@ -118,7 +130,7 @@ def main():
     branch = git.current_branch()  # "ceph-3.2-rhel-7"
     tag_style = guess.version_tag_style(version=version)  # "vX.Y.Z"
     base_tag = guess.version2tag(version, tag_style)  # "v12.2.8"
-    osdist = guess.osdist()
+    osdist = guess_osdist()
 
     # "ceph-3.2-rhel-patches"
     remote_patches_branch = guess.patches_branch(branch, pkg=name,
@@ -154,7 +166,7 @@ def main():
     rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
 
     # add + upload this new tarball.
-    if guess.new_sources():
+    if guess.new_sources(_osdist=osdist):
         fedpkg = 'fedpkg'
         if osdist.startswith('RH'):
             fedpkg = 'rhpkg'
