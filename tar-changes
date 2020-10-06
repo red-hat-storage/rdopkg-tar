@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import argparse
+
 from rdopkg.utils import log
 from rdopkg.utils import specfile
 from rdopkg.utils.cmd import run
@@ -109,6 +111,14 @@ def clear_old_changes_sources():
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        '--patches-branch',
+        help='Specify another local "patches" branch, like "ceph-5.0-rhel-patches-bz12345"',
+    )
+    args = parser.parse_args()
     spec = specfile.Spec()
 
     name = spec.get_tag('Name', expand_macros=True)  # "ceph"
@@ -121,9 +131,13 @@ def main():
     osdist = guess.osdist()
 
     # "ceph-3.2-rhel-patches"
-    remote_patches_branch = guess.patches_branch(branch, pkg=name,
-                                                 osdist=osdist)
-    patches_branch = remote_patches_branch.partition('/')[2]
+    if args.patches_branch:
+        patches_branch = args.patches_branch
+    else:
+        remote_patches_branch = guess.patches_branch(branch, pkg=name,
+                                                     osdist=osdist)
+        patches_branch = remote_patches_branch.partition('/')[2]
+
     patches_sha = git('rev-parse', patches_branch)  # "9e20ef1b14ac70dea53123"
 
     archive_basename = '%s-%s' % (name, version)  # "ceph-12.2.8"
