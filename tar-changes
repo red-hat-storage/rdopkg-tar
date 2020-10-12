@@ -57,19 +57,19 @@ def set_source1(spec):
         spec.set_tag('Source1', source_value)
 
 
-def check_new_commits(tag, old, new):
+def check_new_commits(base, old, new):
     """
     Determine the set of changes between "old" and "new" commits.
 
     Kind of similar to rdopkg's check_new_patches()
 
-    :param tag: common Git tag between "old" and "new", eg. v12.2.8
+    :param base: common Git ref between "old" and "new", eg. v12.2.8
     :param old: old Git sha1
     :param new: new Git sha1
     """
     if old == new:
         return []
-    hashes = git.get_commit_hashes(tag, new)
+    hashes = git.get_commit_hashes(base, new)
     hashlen = len(hashes[0])
     if old[:hashlen] in hashes:
         # This is a linear change. We can simply return the Git commit
@@ -141,11 +141,17 @@ def main():
     patches_sha = git('rev-parse', patches_branch)  # "9e20ef1b14ac70dea53123"
 
     archive_basename = '%s-%s' % (name, version)  # "ceph-12.2.8"
-    filenames = diff_filenames(base_tag, patches_branch)
+    patches_base, patches_base_commits = spec.get_patches_base()
+    if patches_base_commits != 0:
+        # We don't yet support the "+n_commits" syntax for patches_base.
+        raise NotImplementedError('use a plain ref in patches_base')
+    if patches_base is None:
+        patches_base = base_tag
+    filenames = diff_filenames(patches_base, patches_branch)
     if not filenames:
         # todo: make this a silent no-op eventually
-        log.warning('%s identical to %s' % (patches_branch, base_tag))
-        raise RuntimeError(base_tag)
+        log.warning('%s identical to %s' % (patches_branch, patches_base))
+        raise RuntimeError(patches_base)
 
     tarball = archive_files(archive_basename, patches_sha, filenames)
     log.info('wrote %s' % tarball)
@@ -156,7 +162,7 @@ def main():
     spec.save()
 
     # Find the changelog entries from the Git -patches branch.
-    changes = check_new_commits(base_tag, orig_commit, patches_sha)
+    changes = check_new_commits(patches_base, orig_commit, patches_sha)
 
     if not changes:
         log.info('no changes. exiting')
