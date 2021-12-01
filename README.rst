@@ -33,9 +33,9 @@ Comparing ``rdopkg patch`` with this ``tar-changes`` script:
 | Unable to edit binary files        | Able to apply edits to binary    |
 |                                    | files                            |
 +------------------------------------+----------------------------------+
-| Does not require the %commit macro | Requires the %commit macro in    |
-| in your spec file in order to      | your spec file in order to       |
-| generate the %changelog.           | generate the %changelog.         |
+| Does not require the ``%commit``   | Requires the ``%commit`` macro   |
+| macro in your spec file in order   | in your spec file in order to    |
+| to generate the ``%changelog``.    | generate the ``%changelog``.     |
 +------------------------------------+----------------------------------+
 | Slightly more visibility into      | Slightly less visibility into    |
 | changes when browsing dist-git,    | changes when browsing dist-git,  |
