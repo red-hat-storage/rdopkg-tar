@@ -197,7 +197,7 @@ def main():
 
     # Check for the original commiter username in jenkins env variables. 
     # If it exists then build a header file for the new commit to preserve the original commiter.
-    userName = os.environ.get('gitlabUserUsername')
+    userName = os.environ.get('gitlabUserName')
     if userName:
         with open("commit_header.txt","w") as fp:
             fp.write("Original GitLab commiter: " + userName)
