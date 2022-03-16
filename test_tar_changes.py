@@ -25,7 +25,7 @@ def test_clear_old_changes_sources(tmpdir, monkeypatch):
     expected = '3a393d427d5b16c33cf24da91244cc7a  ceph-12.2.8.tar.gz\n'
     assert sources.read() == expected
 
-def test_commit_distgit_ammend(monkeypatch):
+def test_commit_distgit_amend(monkeypatch):
     pass
     # things we need to supply:
     # - branch = current git branch
