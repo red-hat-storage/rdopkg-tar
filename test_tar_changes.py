@@ -2,7 +2,10 @@ import os
 import importlib.machinery
 import importlib.util
 from rdopkg.utils.git import git
+<<<<<<< HEAD
 import pytest
+=======
+>>>>>>> 7de7079... import rdopkg git
 import py.path
 
 loader = importlib.machinery.SourceFileLoader('tarchanges', 'tar-changes')
