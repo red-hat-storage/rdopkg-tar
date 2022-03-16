@@ -199,7 +199,7 @@ def main():
     # If it exists then build a header file for the new commit to preserve the original commiter.
     userName = os.environ.get('gitlabUserName')
     if userName:
-        commit_distgit_ammend(branch=branch, 
+        commit_distgit_amend(branch=branch, 
                                 patch_branch=patches_branch, 
                                 msg = "orig commiter: " + userName)
     else:
