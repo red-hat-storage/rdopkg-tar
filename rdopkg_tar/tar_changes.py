@@ -8,7 +8,6 @@ from rdopkg.utils.cmd import run
 from rdopkg.utils.git import git
 from rdopkg import guess
 import rdopkg.actions.distgit.actions
-import rdopkg.exceptions
 import os
 
 
