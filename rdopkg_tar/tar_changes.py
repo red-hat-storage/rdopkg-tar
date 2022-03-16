@@ -8,6 +8,7 @@ from rdopkg.utils.cmd import run
 from rdopkg.utils.git import git
 from rdopkg import guess
 import rdopkg.actions.distgit.actions
+import rdopkg.exceptions
 import os
 
 
@@ -199,11 +200,9 @@ def main():
     # If it exists then build a header file for the new commit to preserve the original commiter.
     userName = os.environ.get('gitlabUserName')
     if userName:
-        with open("commit_header.txt","w") as fp:
-            fp.write("Original GitLab commiter: " + userName)
-        rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
-                                                         local_patches_branch=patches_branch,
-                                                         commit_header_file="commit_header.txt")
+        commit_distgit_ammend(branch=branch, 
+                                patch_branch=patches_branch, 
+                                msg = "orig commiter: " + userName)
     else:
         # Commit everything to dist-git
         rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
