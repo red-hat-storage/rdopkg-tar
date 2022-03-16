@@ -113,8 +113,11 @@ def clear_old_changes_sources():
 
 def commit_distgit_amend(suffix):
     """ Ammend commit with original gitlab user. """
+    rng = 'HEAD~..HEAD'
+    message = git('log', '--format=%s%n%n%b', rng, log_cmd=False)
+    message += '\n\n' + suffix
     cmd = ['commit','-a','-F','-','--amend']
-    git(*cmd, input=suffix, print_output=True)
+    git(*cmd, input=message, print_output=True)
     
 
 def main():
