@@ -2,10 +2,7 @@ import os
 import importlib.machinery
 import importlib.util
 from rdopkg.utils.git import git
-<<<<<<< HEAD
 import pytest
-=======
->>>>>>> 7de7079... import rdopkg git
 import py.path
 
 loader = importlib.machinery.SourceFileLoader('tarchanges', 'tar-changes')
@@ -36,6 +33,7 @@ def distgitdir(tmpdir):
         git('init')
         tmpdir.join('contents.txt').write('initial contents')
         git('add', '-f', '.')
+
         git('commit', '-m', 'Initial import', isolated=True, print_stderr=True)
         tmpdir.join('contents.txt').write('second contents')
         git('commit', '-a', '-m' 'second commit')
