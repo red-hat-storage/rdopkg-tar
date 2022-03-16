@@ -27,7 +27,3 @@ def test_clear_old_changes_sources(tmpdir, monkeypatch):
 
 def test_commit_distgit_amend(monkeypatch):
     pass
-    # things we need to supply:
-    # - branch = current git branch
-    # - local_patches_branch = patches branch from args
-    # - msg = updated commit message w/ original commiter's username

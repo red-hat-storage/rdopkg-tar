@@ -111,10 +111,10 @@ def clear_old_changes_sources():
                 f.write(line)
 
 
-def commit_distgit_amend(branch, patch_branch, msg):
+def commit_distgit_amend(suffix):
     """ Ammend commit with original gitlab user. """
     cmd = ['commit','-a','-F','-','--amend']
-    git(*cmd, input=msg, print_output=True)
+    git(*cmd, input=suffix, print_output=True)
     
 
 def main():
@@ -192,9 +192,7 @@ def main():
     # If it exists then build a header file for the new commit to preserve the original commiter.
     userName = os.environ.get('gitlabUserName')
     if userName:
-        commit_distgit_amend(branch=branch, 
-                                patch_branch=patches_branch, 
-                                msg = "orig commiter: " + userName)
+        commit_distgit_amend(suffix="orig commiter: " + userName)
     else:
         # Commit everything to dist-git
         rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
