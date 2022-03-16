@@ -23,3 +23,6 @@ def test_clear_old_changes_sources(tmpdir, monkeypatch):
     sources = tmpdir.join('sources')
     expected = '3a393d427d5b16c33cf24da91244cc7a  ceph-12.2.8.tar.gz\n'
     assert sources.read() == expected
+
+def test_commit_distgit_ammend(monkeypatch):
+    pass
