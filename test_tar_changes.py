@@ -1,6 +1,7 @@
 import os
 import importlib.machinery
 import importlib.util
+from rdopkg.utils.git import git
 import py.path
 
 loader = importlib.machinery.SourceFileLoader('tarchanges', 'tar-changes')
@@ -26,3 +27,4 @@ def test_clear_old_changes_sources(tmpdir, monkeypatch):
 
 def test_commit_distgit_ammend(monkeypatch):
     pass
+
