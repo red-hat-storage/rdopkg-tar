@@ -195,18 +195,12 @@ def main():
         clear_old_changes_sources()
         run(fedpkg, 'upload', tarball, direct=True)
 
-    # Check for the original commiter username in jenkins env variables. 
-    # If it exists then build a header file for the new commit to preserve the original commiter.
-    userName = os.environ.get('gitlabUserName')
-    if userName:
-        commit_distgit_amend(suffix="orig commiter: " + userName)
-    else:
-        # Commit everything to dist-git
-        rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
+    # Commit everything to dist-git
+    rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
                                                          local_patches_branch=patches_branch)
 
     # Check for the original commiter username in jenkins env variables. 
-    # If it exists, then ammend a suffix to the commit.
+    # If it exists then build a header file for the new commit to preserve the original commiter.
     userName = os.environ.get('gitlabUserName')
     if userName:
         commit_distgit_amend(suffix="orig commiter: " + userName)
