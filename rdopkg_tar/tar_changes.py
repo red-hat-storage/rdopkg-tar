@@ -8,7 +8,6 @@ from rdopkg.utils.cmd import run
 from rdopkg.utils.git import git
 from rdopkg import guess
 import rdopkg.actions.distgit.actions
-import rdopkg.exceptions
 import os
 
 
@@ -114,8 +113,6 @@ def clear_old_changes_sources():
 
 def commit_distgit_ammend(branch, patch_branch, msg):
     """ Ammend commit with original gitlab user. """
-    if git.is_clean():
-        raise rdopkg.exception.NoDistgitChangesFound()
     cmd = ['commit','-a','-F','-','--ammend']
     git(*cmd, input=msg, print_output=True)
     
