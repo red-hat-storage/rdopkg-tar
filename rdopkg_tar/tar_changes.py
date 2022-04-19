@@ -200,7 +200,7 @@ def main():
                                                          local_patches_branch=patches_branch)
 
     # Check for the original commiter username in jenkins env variables. 
-    # If it exists then build a header file for the new commit to preserve the original commiter.
+    # If it exists, then ammend a suffix to the commit.
     userName = os.environ.get('gitlabUserName')
     if userName:
         commit_distgit_amend(suffix="orig commiter: " + userName)
