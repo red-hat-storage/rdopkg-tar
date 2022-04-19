@@ -112,7 +112,11 @@ def clear_old_changes_sources():
 
 
 def commit_distgit_amend(suffix):
-    """ Ammend commit with original gitlab user. """
+    """ 
+    Ammend commit with original gitlab user. 
+    
+    :param suffix: String to be amended to commit.
+    """
     rng = 'HEAD~..HEAD'
     message = git('log', '--format=%s%n%n%b', rng, log_cmd=False)
     message += '\n\n' + suffix
@@ -196,7 +200,7 @@ def main():
                                                          local_patches_branch=patches_branch)
 
     # Check for the original commiter username in jenkins env variables. 
-    # If it exists then build a header file for the new commit to preserve the original commiter.
+    # If it exists, then ammend a suffix to the commit.
     userName = os.environ.get('gitlabUserName')
     if userName:
         commit_distgit_amend(suffix="orig commiter: " + userName)
