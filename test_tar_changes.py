@@ -33,7 +33,7 @@ def distgitdir(tmpdir):
         git('init')
         tmpdir.join('contents.txt').write('initial contents')
         git('add', '-f', '.')
-        git('commit', '-m', 'Initial import', isolated=True)
+        git('commit', '-m', 'Initial import', isolated=True, print_stderr=True)
         tmpdir.join('contents.txt').write('second contents')
         git('commit', '-a', '-m' 'second commit')
     return tmpdir
