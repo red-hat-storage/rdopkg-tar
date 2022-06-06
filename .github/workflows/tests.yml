@@ -22,4 +22,4 @@ jobs:
     - name: Test with tox
       run: |
         PY=py$(echo ${{ matrix.python-version }} | tr -d ".")
-        tox -e ${PY} -- --log-cli-level=INFO
+        tox -e ${PY} -- --pdb
