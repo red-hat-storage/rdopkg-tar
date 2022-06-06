@@ -8,6 +8,7 @@ from rdopkg.utils.cmd import run
 from rdopkg.utils.git import git
 from rdopkg import guess
 import rdopkg.actions.distgit.actions
+import os
 
 
 def diff_filenames(base, branch):
@@ -110,6 +111,19 @@ def clear_old_changes_sources():
                 f.write(line)
 
 
+def commit_distgit_amend(suffix):
+    """ 
+    Ammend commit with original gitlab user. 
+    
+    :param suffix: String to be amended to commit.
+    """
+    rng = 'HEAD~..HEAD'
+    message = git('log', '--format=%s%n%n%b', rng, log_cmd=False)
+    message += '\n\n' + suffix
+    cmd = ['commit','-a','-F','-','--amend']
+    git(*cmd, input=message, print_output=True)
+    
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -184,6 +198,13 @@ def main():
     # Commit everything to dist-git
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
                                                          local_patches_branch=patches_branch)
+
+    # Check for the original commiter username in jenkins env variables. 
+    # If it exists, then ammend a suffix to the commit.
+    userName = os.environ.get('gitlabUserName')
+    if userName:
+        commit_distgit_amend(suffix="orig commiter: " + userName)
+
     # Show the final commit
     rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)
 
