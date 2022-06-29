@@ -112,17 +112,17 @@ def clear_old_changes_sources():
 
 
 def commit_distgit_amend(suffix):
-    """ 
-    Ammend commit with original gitlab user. 
-    
+    """
+    Amend commit with original gitlab user
+
     :param suffix: String to be amended to commit.
     """
     rng = 'HEAD~..HEAD'
     message = git('log', '--format=%s%n%n%b', rng, log_cmd=False)
     message += '\n\n' + suffix
-    cmd = ['commit','-a','-F','-','--amend']
+    cmd = ['commit', '-a', '-F', '-', '--amend']
     git(*cmd, input=message, print_output=True)
-    
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -199,11 +199,11 @@ def main():
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
                                                          local_patches_branch=patches_branch)
 
-    # Check for the original commiter username in jenkins env variables. 
-    # If it exists, then ammend a suffix to the commit.
+    # Check for the original commiter username in jenkins env variables.
+    # If it exists, then amend a suffix to the commit.
     userName = os.environ.get('gitlabUserName')
     if userName:
-        commit_distgit_amend(suffix="orig commiter: " + userName)
+        commit_distgit_amend(suffix="orig committer: " + userName)
 
     # Show the final commit
     rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)
