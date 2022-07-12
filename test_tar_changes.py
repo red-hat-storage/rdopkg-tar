@@ -47,7 +47,7 @@ def test_commit_distgit_amend(distgitdir):
         tarchanges.commit_distgit_amend(suffix)
         message = git('log', '--format=%s%n%n%b', rng, log_cmd=False)
     expected = """\
-second commit
+    second commit
 
-orig commiter: developer@example.com"""
+    orig commiter: developer@example.com"""
     assert message == expected
