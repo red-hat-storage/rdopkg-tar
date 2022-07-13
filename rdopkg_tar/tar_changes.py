@@ -202,8 +202,10 @@ def main():
     # Check for the original commiter username in jenkins env variables.
     # If it exists, then amend a suffix to the commit.
     userName = os.environ.get('gitlabUserName')
-    if userName:
-        commit_distgit_amend(suffix="orig committer: " + userName)
+    gitlabuserName = os.environ.get('gitlabUserUsername')
+
+    if userName or gitlabuserName:
+        commit_distgit_amend(suffix="GitLab-User: " + gitlabuserName + " " + userName)
 
     # Show the final commit
     rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)

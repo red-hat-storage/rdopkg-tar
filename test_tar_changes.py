@@ -41,7 +41,7 @@ def distgitdir(tmpdir):
 
 
 def test_commit_distgit_amend(distgitdir):
-    suffix = 'orig commiter: developer@example.com'
+    suffix = 'GitLab-User: developer@example.com'
     rng = 'HEAD~..HEAD'
     with distgitdir.as_cwd():
         tarchanges.commit_distgit_amend(suffix)
@@ -49,5 +49,5 @@ def test_commit_distgit_amend(distgitdir):
     expected = """\
 second commit
 
-orig commiter: developer@example.com"""
+GitLab-User: developer@example.com"""
     assert message == expected
