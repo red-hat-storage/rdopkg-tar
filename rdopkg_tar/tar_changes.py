@@ -123,6 +123,17 @@ def commit_distgit_amend(suffix):
     cmd = ['commit', '-a', '-F', '-', '--amend']
     git(*cmd, input=message, print_output=True)
 
+def upload_source(osdist,tarball,args_new_sources):
+    """ Avoid upload of new sources to dist-git lookaside cache if --no-new-sources is passed in command line
+    Else upload the new sources to dist-git cache 
+    :returns: fedpkg command or False to skip the upload """
+    if guess.new_sources() and args_new_sources:
+        fedpkg = 'fedpkg'
+        if osdist.startswith('RH'):
+            fedpkg = 'rhpkg'
+        clear_old_changes_sources()
+        return fedpkg
+    return None
 
 def main():
     parser = argparse.ArgumentParser(
@@ -131,6 +142,15 @@ def main():
     parser.add_argument(
         '--patches-branch',
         help='Specify another local "patches" branch, like "ceph-5.0-rhel-patches-bz12345"',
+    )
+    parser.add_argument(
+        # By default new_sources is true , which will upload the sources to dist-git by default 
+        # unless --no-new-sources is mentioned in the command line.
+        '-n',
+        '--no-new-sources',
+        dest='new_sources',
+        help='Avoid automatic upload of new sources to dist-git lookaside cache',
+        action='store_false'
     )
     args = parser.parse_args()
     spec = specfile.Spec()
@@ -187,12 +207,10 @@ def main():
     # Insert %changelog.
     rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
 
-    # add + upload this new tarball.
-    if guess.new_sources():
-        fedpkg = 'fedpkg'
-        if osdist.startswith('RH'):
-            fedpkg = 'rhpkg'
-        clear_old_changes_sources()
+    
+    # If the function returns True then uplaod then upload sources to distgit. Else skip
+    fedpkg = upload_source(osdist,tarball,args.new_sources)
+    if fedpkg:
         run(fedpkg, 'upload', tarball, direct=True)
 
     # Commit everything to dist-git
@@ -213,3 +231,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
