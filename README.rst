@@ -52,3 +52,26 @@ Comparing ``rdopkg patch`` with this ``tar-changes`` script:
 
 .. _rdopkg: https://github.com/softwarefactory-project/rdopkg
 .. _Limited: https://github.com/softwarefactory-project/rdopkg/issues/169
+
+Understanding branches
+======================
+
+We build RH Ceph Storage in ``ceph-*`` Git branches.
+**dist-git branches** follow the form ``<product-name>-<product-version>-<OS>-<OS version>``.
+
+For RH Ceph Storage 5, we support both RHEL 8 and RHEL 9, so we have the following branches:
+
+* ``ceph-5.0-rhel-8``: The first release of the RHCEPH 5 product. We did not support RHEL 9 yet because it was so early.
+* ``ceph-5.1-rhel-8`` and ``ceph-5.1-rhel-9``: The second release of the RHCEPH 5 product. We started building Ceph for RHEL 9.
+* ``ceph-5.2-rhel-8`` and ``ceph-5.2-rhel-9``: The third release of the RHCEPH 5 product. 
+
+For patch management, we use  rdopkg_ **-style "-patches" branches** 
+that follow a similar convention. Note, we do not have separate "rhel-8" or "rhel-9" -patches branches, 
+because the code should be identical on both OSes.
+
+RH Ceph Storage 5:
+
+* ``ceph-5.0-rhel-patches``: RHCEPH 5.0 downstream code.
+* ``ceph-5.1-rhel-patches``: RHCEPH 5.1 downstream code.
+* ``ceph-5.2-rhel-patches``: RHCEPH 5.2 downstream code.
+* ``ceph-5.3-rhel-patches``: RHCEPH 5.3 downstream code.
