@@ -152,9 +152,14 @@ def upload_source(osdist, tarball, args_new_sources):
         clear_old_changes_sources()
         run(cmd, 'upload', tarball, direct=True)
 
-def main():
+
+def parse_args():
+    """
+    parse args from the spec file
+    returns: branch, patches_branch, changes, tarball, osdist, args
+    """
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         '--patches-branch',
@@ -175,6 +180,7 @@ def main():
     name = spec.get_tag('Name', expand_macros=True)  # "ceph"
     version = spec.get_tag('Version', expand_macros=True)  # "12.2.8"
     orig_commit = spec.get_macro('commit')  # "9e20ef1b14ac70dea53123"
+
 
     branch = git.current_branch()  # "ceph-3.2-rhel-7"
     tag_style = guess.version_tag_style(version=version)  # "vX.Y.Z"
@@ -198,6 +204,7 @@ def main():
         raise NotImplementedError('use a plain ref in patches_base')
     if patches_base is None:
         patches_base = base_tag
+
     filenames = diff_filenames(patches_base, patches_branch)
     if not filenames:
         # todo: make this a silent no-op eventually
@@ -218,9 +225,15 @@ def main():
     if not changes:
         log.info('no changes. exiting')
         raise SystemExit(1)
+    
+    return branch, patches_branch, changes, tarball, osdist, args
+
+
+def main():
+    # Obtain the branch, patches_branch, changlog entries from Git -patches branch, tarball, osdist
+    branch, patches_branch, changes, tarball, osdist, args = parse_args()
 
     # Bump the release and add the %changelog entries.
-
     # Insert %changelog.
     rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
 
