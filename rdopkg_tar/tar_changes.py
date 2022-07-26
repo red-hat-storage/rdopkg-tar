@@ -123,17 +123,24 @@ def commit_distgit_amend(suffix):
     cmd = ['commit', '-a', '-F', '-', '--amend']
     git(*cmd, input=message, print_output=True)
 
-def upload_source(osdist,tarball,args_new_sources):
-    """ Avoid upload of new sources to dist-git lookaside cache if --no-new-sources is passed in command line
-    Else upload the new sources to dist-git cache 
-    :returns: fedpkg command or False to skip the upload """
+
+def upload_source(osdist, tarball, args_new_sources):
+    """
+    Upload new sources to dist-git lookaside cache unless --no-new-sources is
+    passed in command line.
+
+    :param odist: guess.osdist() instance
+    :param tarball: filename of patches archive to upload
+    :param args_new_sources: new_sources flag from args
+    """
+
+    cmd = 'fedpkg'
+
     if guess.new_sources() and args_new_sources:
-        fedpkg = 'fedpkg'
         if osdist.startswith('RH'):
-            fedpkg = 'rhpkg'
+            cmd = 'rhpkg'
         clear_old_changes_sources()
-        return fedpkg
-    return None
+        run(cmd, 'upload', tarball, direct=True)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -207,11 +214,8 @@ def main():
     # Insert %changelog.
     rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
 
-    
-    # If the function returns True then uplaod then upload sources to distgit. Else skip
-    fedpkg = upload_source(osdist,tarball,args.new_sources)
-    if fedpkg:
-        run(fedpkg, 'upload', tarball, direct=True)
+    # Potentially upload sources to distgit.
+    upload_source(osdist, tarball, args.new_sources)
 
     # Commit everything to dist-git
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
