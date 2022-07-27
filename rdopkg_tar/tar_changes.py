@@ -123,6 +123,16 @@ def commit_distgit_amend(suffix):
     cmd = ['commit', '-a', '-F', '-', '--amend']
     git(*cmd, input=message, print_output=True)
 
+def check_gitlabuser():
+    """
+    Check for the original commiter username in jenkins env variables.
+    If it exists, then amend a suffix to the commit.
+    """
+    userName = os.environ.get('gitlabUserName')
+    gitlabuserName = os.environ.get('gitlabUserUsername')
+
+    if userName or gitlabuserName:
+        commit_distgit_amend(suffix="GitLab-User: " + gitlabuserName + " " + userName)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -199,14 +209,7 @@ def main():
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
                                                          local_patches_branch=patches_branch)
 
-    # Check for the original commiter username in jenkins env variables.
-    # If it exists, then amend a suffix to the commit.
-    userName = os.environ.get('gitlabUserName')
-    gitlabuserName = os.environ.get('gitlabUserUsername')
-
-    if userName or gitlabuserName:
-        commit_distgit_amend(suffix="GitLab-User: " + gitlabuserName + " " + userName)
-
+    check_gitlabuser()
     # Show the final commit
     rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)
 
