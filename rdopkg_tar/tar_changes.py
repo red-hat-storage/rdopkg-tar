@@ -134,6 +134,24 @@ def check_gitlabuser():
     if userName or gitlabuserName:
         commit_distgit_amend(suffix="GitLab-User: " + gitlabuserName + " " + userName)
 
+def upload_source(osdist, tarball, args_new_sources):
+    """
+    Upload new sources to dist-git lookaside cache unless --no-new-sources is
+    passed in command line.
+
+    :param odist: guess.osdist() instance
+    :param tarball: filename of patches archive to upload
+    :param args_new_sources: new_sources flag from args
+    """
+
+    cmd = 'fedpkg'
+
+    if guess.new_sources() and args_new_sources:
+        if osdist.startswith('RH'):
+            cmd = 'rhpkg'
+        clear_old_changes_sources()
+        run(cmd, 'upload', tarball, direct=True)
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -141,6 +159,15 @@ def main():
     parser.add_argument(
         '--patches-branch',
         help='Specify another local "patches" branch, like "ceph-5.0-rhel-patches-bz12345"',
+    )
+    parser.add_argument(
+        # By default new_sources is true , which will upload the sources to dist-git by default 
+        # unless --no-new-sources is mentioned in the command line.
+        '-n',
+        '--no-new-sources',
+        dest='new_sources',
+        help='Avoid automatic upload of new sources to dist-git lookaside cache',
+        action='store_false'
     )
     args = parser.parse_args()
     spec = specfile.Spec()
@@ -197,13 +224,8 @@ def main():
     # Insert %changelog.
     rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
 
-    # add + upload this new tarball.
-    if guess.new_sources():
-        fedpkg = 'fedpkg'
-        if osdist.startswith('RH'):
-            fedpkg = 'rhpkg'
-        clear_old_changes_sources()
-        run(fedpkg, 'upload', tarball, direct=True)
+    # Potentially upload sources to distgit.
+    upload_source(osdist, tarball, args.new_sources)
 
     # Commit everything to dist-git
     rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
@@ -216,3 +238,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
