@@ -75,3 +75,19 @@ def test_upload_source(delete_sources, mocked_run, mocked_sources):
     # flag was detected by argparse
     tarchanges.upload_source(osdist, 'test.tar', False)
     mocked_run.assert_called_once() # run() was not called a 2nd time
+
+@patch.object(git, 'get_commit_hashes', return_value=["9e20ef1b14ac70dea53123"])
+@patch.object(git, 'get_commit_bzs')
+def test_check_new_commits(mocked_bzs, mocked_git):
+    # Check if empty list is being returned when old and new commits are the same
+    actual = tarchanges.check_new_commits('v12.2.8', '9e20ef1b14ac70dea53123', '9e20ef1b14ac70dea53123')
+    expected = []
+    assert actual == expected
+
+    # Check if get_commit_bzs is called
+    tarchanges.check_new_commits('v12.2.8', '9e20ef1b14ac70dea53123', '9e20ef1b14ac70dea53567')
+    mocked_bzs.assert_called_once()
+
+    # get_commit_bzs is not called
+    tarchanges.check_new_commits('v12.2.8', '8u31ef1b14ac70dea53123', '9e20ef1b14ac70dea53567')
+    mocked_bzs.assert_called_once() 
