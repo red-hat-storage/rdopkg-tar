@@ -113,3 +113,10 @@ def test_format_changelog():
     actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53123", "cephbz", ["123","567"])])
     expected = ["cephbz (rhbz#123 rhbz#567)"]
     assert actual == expected
+
+@patch.object(tarchanges, 'git')
+def test_diff_filenames(mocked_git):
+    # check if the diff_filenames passes the correct commit range to git
+    actual = tarchanges.diff_filenames('main', 'wip-branch')
+    assert "main..wip-branch" in mocked_git.call_args_list[0][0][4]
+
