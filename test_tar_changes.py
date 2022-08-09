@@ -75,3 +75,11 @@ def test_upload_source(delete_sources, mocked_run, mocked_sources):
     # flag was detected by argparse
     tarchanges.upload_source(osdist, 'test.tar', False)
     mocked_run.assert_called_once() # run() was not called a 2nd time
+
+@patch.object(tarchanges, 'git')
+def test_archive_files(mocked_git):
+    # check if the archive_files includes the correct info in git cmds
+    archive_files = tarchanges.archive_files('main', '9e20ef1b14ac70dea53123', ['src'])
+    called_args = mocked_git.call_args_list[0][0]
+    expected = 'main-9e20ef1b14ac70dea53123-changes.tar.gz'
+    assert (expected in called_args[2]) and ('src' in called_args[4])
