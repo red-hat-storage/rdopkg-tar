@@ -75,3 +75,14 @@ def test_upload_source(delete_sources, mocked_run, mocked_sources):
     # flag was detected by argparse
     tarchanges.upload_source(osdist, 'test.tar', False)
     mocked_run.assert_called_once() # run() was not called a 2nd time
+
+def test_format_changelog():
+    # Case 1: bzlist is empty
+    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53456", "bzceph", [])])
+    expected = ["bzceph"]
+    assert actual == expected
+
+    # Case 2: bzlist has a list of bzs
+    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53123", "cephbz", ["123","567"])])
+    expected = ["cephbz (rhbz#123 rhbz#567)"]
+    assert actual == expected
