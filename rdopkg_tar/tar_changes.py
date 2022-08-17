@@ -131,7 +131,7 @@ def check_gitlabuser():
     userName = os.environ.get('gitlabUserName')
     gitlabuserName = os.environ.get('gitlabUserUsername')
 
-    if userName or gitlabuserName:
+    if userName and gitlabuserName:
         commit_distgit_amend(suffix="GitLab-User: " + gitlabuserName + " " + userName)
 
 def upload_source(osdist, tarball, args_new_sources):
