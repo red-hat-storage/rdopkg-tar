@@ -76,6 +76,7 @@ def test_upload_source(delete_sources, mocked_run, mocked_sources):
     tarchanges.upload_source(osdist, 'test.tar', False)
     mocked_run.assert_called_once() # run() was not called a 2nd time
 
+
 @patch.object(tarchanges, 'git')
 def test_archive_files(mocked_git):
     # check if the archive_files includes the correct info in git cmds
@@ -83,3 +84,15 @@ def test_archive_files(mocked_git):
     called_args = mocked_git.call_args_list[0][0]
     expected = 'main-9e20ef1b14ac70dea53123-changes.tar.gz'
     assert (expected in called_args[2]) and ('src' in called_args[4])
+
+
+def test_format_changelog():
+    # Case 1: bzlist is empty
+    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53456", "bzceph", [])])
+    expected = ["bzceph"]
+    assert actual == expected
+
+    # Case 2: bzlist has a list of bzs
+    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53123", "cephbz", ["123","567"])])
+    expected = ["cephbz (rhbz#123 rhbz#567)"]
+    assert actual == expected
