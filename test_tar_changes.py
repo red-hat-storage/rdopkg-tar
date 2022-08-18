@@ -114,6 +114,14 @@ def test_format_changelog():
     expected = ["cephbz (rhbz#123 rhbz#567)"]
     assert actual == expected
 
+
+@patch.object(tarchanges, 'git')
+def test_diff_filenames(mocked_git):
+    # check if the diff_filenames passes the correct commit range to git
+    actual = tarchanges.diff_filenames('main', 'wip-branch')
+    assert "main..wip-branch" in mocked_git.call_args_list[0][0][4]
+
+
 def test_set_source1():
     # check if the set_source1 sets the given spec's tag Source1 to correct value
     test_spec = specfile.Spec()
