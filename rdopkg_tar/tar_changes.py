@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import collections
 
 from rdopkg.utils import log
 from rdopkg.utils import specfile
@@ -153,10 +154,10 @@ def upload_source(osdist, tarball, args_new_sources):
         run(cmd, 'upload', tarball, direct=True)
 
 
-def parse_args():
+def parse_args(parsed_params):
     """
-    parse args from the spec file
-    returns: branch, patches_branch, changes, tarball, osdist, args
+    parse args from the spec file and assign to the collection parsed_params
+    args assigned: branch, patches_branch, changes, tarball, osdist, args
     """
     parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -226,27 +227,30 @@ def parse_args():
         log.info('no changes. exiting')
         raise SystemExit(1)
     
-    return branch, patches_branch, changes, tarball, osdist, args
+    params = parsed_params(branch, patches_branch, changes, tarball, osdist, args)
 
 
 def main():
+    # Create a collection of parsed_params to contain the values of params
+    parsed_params = collections.namedtuple('params', ['branch', 'patches_branch', 'changes', 'tarball', 'osdist', 'args'])
+
     # Obtain the branch, patches_branch, changlog entries from Git -patches branch, tarball, osdist
-    branch, patches_branch, changes, tarball, osdist, args = parse_args()
+    parse_args(parsed_params)
 
     # Bump the release and add the %changelog entries.
     # Insert %changelog.
-    rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
+    rdopkg.actions.distgit.actions.update_spec(branch=parsed_params.branch, changes=parsed_params.changes)
 
     # Potentially upload sources to distgit.
-    upload_source(osdist, tarball, args.new_sources)
+    upload_source(parsed_params.osdist, parsed_params.tarball, parsed_params.args.new_sources)
 
     # Commit everything to dist-git
-    rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
-                                                         local_patches_branch=patches_branch)
+    rdopkg.actions.distgit.actions.commit_distgit_update(branch=parsed_params.branch,
+                                                         local_patches_branch=parsed_params.patches_branch)
 
     check_gitlabuser()
     # Show the final commit
-    rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)
+    rdopkg.actions.distgit.actions.final_spec_diff(branch=parsed_params.branch)
 
 
 if __name__ == '__main__':
