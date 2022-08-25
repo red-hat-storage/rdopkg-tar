@@ -154,11 +154,14 @@ def upload_source(osdist, tarball, args_new_sources):
         run(cmd, 'upload', tarball, direct=True)
 
 
-def parse_args(parsed_params):
+def parse_args():
     """
     parse args from the spec file and assign to the collection parsed_params
     args assigned: branch, patches_branch, changes, tarball, osdist, args
     """
+    # Create a collection of parsed_params to contain the values of params
+    parsed_params = collections.namedtuple('params', ['branch', 'patches_branch', 'changes', 'tarball', 'osdist', 'args'])
+
     parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -227,15 +230,11 @@ def parse_args(parsed_params):
         log.info('no changes. exiting')
         raise SystemExit(1)
     
-    params = parsed_params(branch, patches_branch, changes, tarball, osdist, args)
-
+    return parsed_params(branch, patches_branch, changes, tarball, osdist, args)
 
 def main():
-    # Create a collection of parsed_params to contain the values of params
-    parsed_params = collections.namedtuple('params', ['branch', 'patches_branch', 'changes', 'tarball', 'osdist', 'args'])
-
     # Obtain the branch, patches_branch, changlog entries from Git -patches branch, tarball, osdist
-    parse_args(parsed_params)
+    parsed_params = parse_args()
 
     # Bump the release and add the %changelog entries.
     # Insert %changelog.
