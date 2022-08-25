@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import collections
 
 from rdopkg.utils import log
 from rdopkg.utils import specfile
@@ -152,9 +153,17 @@ def upload_source(osdist, tarball, args_new_sources):
         clear_old_changes_sources()
         run(cmd, 'upload', tarball, direct=True)
 
-def main():
+
+def parse_args():
+    """
+    parse args from the spec file and assign to the collection parsed_params
+    args assigned: branch, patches_branch, changes, tarball, osdist, args
+    """
+    # Create a collection of parsed_params to contain the values of params
+    parsed_params = collections.namedtuple('params', ['branch', 'patches_branch', 'changes', 'tarball', 'osdist', 'args'])
+
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         '--patches-branch',
@@ -175,6 +184,7 @@ def main():
     name = spec.get_tag('Name', expand_macros=True)  # "ceph"
     version = spec.get_tag('Version', expand_macros=True)  # "12.2.8"
     orig_commit = spec.get_macro('commit')  # "9e20ef1b14ac70dea53123"
+
 
     branch = git.current_branch()  # "ceph-3.2-rhel-7"
     tag_style = guess.version_tag_style(version=version)  # "vX.Y.Z"
@@ -198,6 +208,7 @@ def main():
         raise NotImplementedError('use a plain ref in patches_base')
     if patches_base is None:
         patches_base = base_tag
+
     filenames = diff_filenames(patches_base, patches_branch)
     if not filenames:
         # todo: make this a silent no-op eventually
@@ -218,22 +229,27 @@ def main():
     if not changes:
         log.info('no changes. exiting')
         raise SystemExit(1)
+    
+    return parsed_params(branch, patches_branch, changes, tarball, osdist, args)
+
+def main():
+    # Obtain the branch, patches_branch, changlog entries from Git -patches branch, tarball, osdist
+    parsed_params = parse_args()
 
     # Bump the release and add the %changelog entries.
-
     # Insert %changelog.
-    rdopkg.actions.distgit.actions.update_spec(branch=branch, changes=changes)
+    rdopkg.actions.distgit.actions.update_spec(branch=parsed_params.branch, changes=parsed_params.changes)
 
     # Potentially upload sources to distgit.
-    upload_source(osdist, tarball, args.new_sources)
+    upload_source(parsed_params.osdist, parsed_params.tarball, parsed_params.args.new_sources)
 
     # Commit everything to dist-git
-    rdopkg.actions.distgit.actions.commit_distgit_update(branch=branch,
-                                                         local_patches_branch=patches_branch)
+    rdopkg.actions.distgit.actions.commit_distgit_update(branch=parsed_params.branch,
+                                                         local_patches_branch=parsed_params.patches_branch)
 
     check_gitlabuser()
     # Show the final commit
-    rdopkg.actions.distgit.actions.final_spec_diff(branch=branch)
+    rdopkg.actions.distgit.actions.final_spec_diff(branch=parsed_params.branch)
 
 
 if __name__ == '__main__':
