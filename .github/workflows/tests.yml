@@ -4,12 +4,11 @@ on: [push, pull_request]
 
 jobs:
   tox:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
       matrix:
         python-version:
-        - 3.6
         - 3.9
     steps:
     - uses: actions/checkout@v2
