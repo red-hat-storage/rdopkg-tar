@@ -94,7 +94,7 @@ def format_changelog(changes_data):
     """
     changes = []
     for _, subj, bzs in changes_data:
-        bzstr = ' '.join(map(lambda x: 'rhbz#%s' % x, bzs))
+        bzstr = ' '.join(bzs)
         if bzstr:
             subj += ' (%s)' % bzstr
         changes.append(subj)

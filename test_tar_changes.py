@@ -110,8 +110,13 @@ def test_format_changelog():
     assert actual == expected
 
     # Case 2: bzlist has a list of bzs
-    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53123", "cephbz", ["123","567"])])
+    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53123", "cephbz", ["rhbz#123","rhbz#567"])])
     expected = ["cephbz (rhbz#123 rhbz#567)"]
+    assert actual == expected
+
+    # Case 3: bzlist has a list of Jiras and bzs
+    actual = tarchanges.format_changelog([("9e20ef1b14ac70dea53123", "cephbz", ["ISCE-1","rhbz#567"])])
+    expected = ["cephbz (ISCE-1 rhbz#567)"]
     assert actual == expected
 
 
